@@ -18,6 +18,9 @@ class Account:
   
   def get_name(self):
     return self.__first_name, self.__last_name
+
+  def get_name_string(self):
+    return self.__first_name + " " + self.__last_name
   
   def get_password(self):
     return self.__password

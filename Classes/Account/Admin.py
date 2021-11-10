@@ -1,4 +1,4 @@
-from Schema.Account.Account import Account
+from Classes.Account.Account import Account
 from func.Idgenerator import Idgenerator
 
 class Admin(Account):

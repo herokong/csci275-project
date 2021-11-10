@@ -2,7 +2,9 @@ from Domain.utils.DataGateway import DataGateway
 import uuid
 
 class Classroom:
-  def __init__(self, name, description, max_student, creator_email, is_private, id=uuid.uuid4()):
+  def __init__(self, name, description, max_student, creator_email, is_private, id=uuid.uuid4(), code=None):
+    if (DataGateway.is_data_existed('Classroom', name)):
+      raise ValueError('Unsuccessfully created! (there is classroom with that name)')
     if len(name) < 2:
       raise ValueError("Name must be longer than 2 characters!")
     elif len(description) < 3:
@@ -18,8 +20,9 @@ class Classroom:
     self.__creator = creator_email
     self.__classwork_list = {}
     self.__is_private = is_private
+    self.__code = code
     DataGateway.save_data("Classroom", self.__name, self)
-  
+
   def get_id (self):
     return self.__id
   
@@ -93,3 +96,14 @@ class Classroom:
       return True
     else:
       return False
+  
+  def join_classroom(classname, user_email, user_role):
+    try:
+      classroom = DataGateway.get_data('Classroom', classname)
+      if user_role == 'professor':
+        classroom.add_professor(user_email)
+      elif user_role == 'student':
+        classroom.add_student(user_email)
+      DataGateway.save_data('Classroom', classroom.get_name(), classroom)
+    except:
+      raise ValueError('No Classroom!')
