@@ -3,18 +3,11 @@
 
 
 <!-- Button trigger modal for create classroom -->
-<<<<<<< HEAD
   {% if user %}
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
       Create Classroom
     </button>
   {% endif %}
-=======
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-    Create Classroom
-  </button>
-  
->>>>>>> 7c4eafe82126345dbcb09c088da453df0bbd1030
   <!-- Modal create classroom -->
   <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -84,35 +77,6 @@
                         {{form.NumberOfStudents(class="form-control form-control-lg ")}}                        
                         {%endif%}
                     </div>
-<<<<<<< HEAD
-=======
-                    <div class="form-group">
-                        {{form.password.label(class="form-control-label")}}
-                        {% if form.password.errors %}
-                        {{form.password(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {%for error in form.password.errors%}
-                            <span>{{error}}</span>
-                            {%endfor%}
-                        </div>
-                        {%else%}
-                        {{form.password(class="form-control form-control-lg ")}}                        
-                        {%endif%}                    
-                    </div>
-                    <div class="form-group">
-                        {{form.confirm_password.label(class="form-control-label")}}
-                        {% if form.confirm_password.errors %}
-                        {{form.confirm_password(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {%for error in form.confirm_password.errors%}
-                            <span>{{error}}</span>
-                            {%endfor%}
-                        </div>
-                        {%else%}
-                        {{form.confirm_password(class="form-control form-control-lg ")}}                        
-                        {%endif%}                    
-                    </div>
->>>>>>> 7c4eafe82126345dbcb09c088da453df0bbd1030
                 </fieldset>
                 <div class ="form-group pt-3">
                     {{form.submit(class='btn btn-outline-info')}}
@@ -126,17 +90,11 @@
     </div>
   </div>
   <!-- Button trigger modal for join classroom -->
-<<<<<<< HEAD
   {% if user %}
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
       Join Classroom
     </button>
   {% endif %}
-=======
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Join Classroom
-  </button>
->>>>>>> 7c4eafe82126345dbcb09c088da453df0bbd1030
   
   <!-- Modal join classroom -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -180,10 +138,6 @@
                         {{form.Jpassword(class="form-control form-control-lg ")}}                        
                         {%endif%}                    
                     </div>
-<<<<<<< HEAD
-=======
-                   
->>>>>>> 7c4eafe82126345dbcb09c088da453df0bbd1030
                 </fieldset>
                 <div class ="form-group pt-3">
                     {{form.Jsubmit(class='btn btn-outline-info')}}
