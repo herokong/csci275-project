@@ -36,8 +36,10 @@
             <!-- Navbar Right Side -->
             <div class="navbar-nav ">
               <a class="nav-item nav-link" href="{{url_for('about')}}">About</a>
-              <a class="nav-item nav-link" href="{{url_for('login')}}">Login</a>
-              <a class="nav-item nav-link" href="{{url_for('register')}}">Register</a>
+              {% if not user %}
+                <a class="nav-item nav-link" href="{{url_for('login')}}">Login</a>
+                <a class="nav-item nav-link" href="{{url_for('register')}}">Register</a>
+              {% endif %}
             </div>
           </div>
         </div>

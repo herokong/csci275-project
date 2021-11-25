@@ -3,10 +3,11 @@
 
 
 <!-- Button trigger modal for create classroom -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-    Create Classroom
-  </button>
-  
+  {% if user %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+      Create Classroom
+    </button>
+  {% endif %}
   <!-- Modal create classroom -->
   <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -89,9 +90,11 @@
     </div>
   </div>
   <!-- Button trigger modal for join classroom -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Join Classroom
-  </button>
+  {% if user %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Join Classroom
+    </button>
+  {% endif %}
   
   <!-- Modal join classroom -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -135,7 +138,6 @@
                         {{form.Jpassword(class="form-control form-control-lg ")}}                        
                         {%endif%}                    
                     </div>
-                   
                 </fieldset>
                 <div class ="form-group pt-3">
                     {{form.Jsubmit(class='btn btn-outline-info')}}

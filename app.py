@@ -34,12 +34,12 @@ def home():
                 flash(f'You need to login before joining a class!', 'danger')
         except ValueError as e:
             flash(f'{e}', 'danger')
-    return render_template("home.html",form = form)
+    return render_template("home.html",form = form, user=USER)
 
 
 @app.route('/about')
 def about():
-    return render_template("about.html", title="About")
+    return render_template("about.html", title="About", user=USER)
 
 
 @app.route('/register', methods=['GET', 'POST'])
