@@ -1,0 +1,11 @@
+{%extends "layout.html"%} 
+{%block content%} 
+<h1>{{ class_name }}</h1>
+<h1>Creator: {{ creator }}</h1>
+
+{% for student in s_list %}
+<ul class="list-group">
+  <li class="list-group-item">{{ student }}</li>
+</ul>
+{% endfor %}
+{%endblock%}

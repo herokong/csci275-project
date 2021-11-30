@@ -28,6 +28,6 @@ class CreatClassroom_JoinClassroom(FlaskForm):
     confirm_password=PasswordField('Confirm Password' , validators=[DataRequired(), EqualTo('password')])
     submit= SubmitField('Create Classroom')
     JClassName=StringField('Class Name', validators=[DataRequired(), Length(min=2, max=20)] )
-    Jpassword= PasswordField('Password' , validators=[])
+    Jpassword= PasswordField('Code' , validators=[])
     Jsubmit= SubmitField('Join Classroom')
 

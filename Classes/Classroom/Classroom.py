@@ -2,7 +2,7 @@ from Domain.utils.DataGateway import DataGateway
 import uuid
 
 class Classroom:
-  def __init__(self, name, description, max_student, creator_email, is_private, id=uuid.uuid4(), code=None):
+  def __init__(self, name, description, max_student, creator, is_private, id=uuid.uuid4(), code=None):
     if (DataGateway.is_data_existed('Classroom', name)):
       raise ValueError('Unsuccessfully created! (there is classroom with that name)')
     if len(name) < 2:
@@ -17,10 +17,12 @@ class Classroom:
     self.__max_student_number = max_student
     self.__student_list = {}
     self.__professor_list = []
-    self.__creator = creator_email
+    self.__creator = creator.get_email()
     self.__classwork_list = {}
     self.__is_private = is_private
     self.__code = code
+    creator.enroll(name)
+    DataGateway.save_data('User', creator.get_email(), creator)
     DataGateway.save_data("Classroom", self.__name, self)
 
   def get_id (self):
@@ -65,8 +67,12 @@ class Classroom:
   def set_creator(self, creator):
     self.__creator = creator
   
+  def is_creator(self, email):
+    return self.__creator == email
+
   def get_classwork(self):
     return self.__classwork_list
+
   
   def set_classwork(self, classwork_list):
     self.__classwork_list = classwork_list
@@ -91,19 +97,36 @@ class Classroom:
       raise ValueError("The professor is the creator of the class!")
     self.__professor_list.remove(professor_email)
   
+  def get_code(self):
+    return self.__code
+  
   def check_enrollment(self, student_email):
     if (student_email in self.__student_list):
       return True
     else:
       return False
   
-  def join_classroom(classname, user_email, user_role):
+  def join_classroom(classname, code, user):
     try:
-      classroom = DataGateway.get_data('Classroom', classname)
-      if user_role == 'professor':
-        classroom.add_professor(user_email)
-      elif user_role == 'student':
-        classroom.add_student(user_email)
-      DataGateway.save_data('Classroom', classroom.get_name(), classroom)
-    except:
-      raise ValueError('No Classroom!')
+      if DataGateway.is_data_existed('Classroom', classname):
+        classroom = DataGateway.get_data('Classroom', classname)
+        if user.get_email() in classroom.get_student_list() or user.get_email() in classroom.get_professor_lsit() or classroom.is_creator(user.get_email()):
+          raise ValueError('User is already in the classroom')
+
+        if classroom.is_private():
+          if not classroom.get_code() == code:
+            raise ValueError('Code is not correct')
+
+        if user.get_role() == 'professor':
+          classroom.add_professor(user.get_email())
+        elif user.get_role() == 'student':
+          classroom.add_student(user.get_email())
+
+        user.enroll(classroom.get_name())
+        DataGateway.save_data('User', user.get_email(), user)
+        DataGateway.save_data('Classroom', classroom.get_name(), classroom)
+      else:
+        raise ValueError('Classroom is not exist!')
+
+    except ValueError as e:
+      raise e

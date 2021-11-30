@@ -1,6 +1,7 @@
 import json
 import os
 import jsonpickle
+from flask import session
 
 class DataGateway:
   """
@@ -19,7 +20,6 @@ class DataGateway:
     """
     try:
       if (not DataGateway.is_data_existed(type, file_name)):
-        print(file_name)
         return False
       with open(f"./Data/{type}/{file_name}.json") as file:
         return jsonpickle.decode(json.load(file))
