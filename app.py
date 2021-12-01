@@ -101,11 +101,12 @@ def delete():
     USER = DataGateway.get_data('User', jsonpickle.decode(session['User']).get_email())
     if len(USER.get_class_list()) > 0:
         for classroom in USER.get_class_list():
+            classroom_obj = DataGateway.get_data('Classroom', classroom)
             if DataGateway.get_data('Classroom', classroom).is_creator(USER.get_email()):
-                DataGateway.get_data('Classroom', classroom).set_creator("Account Deleted")
+                classroom_obj.set_creator("Account Deleted")
             else:
-                DataGateway.get_data('Classroom', classroom).remove_student(USER.get_email())
-            DataGateway.save_data('Classroom', classroom)
+                classroom_obj.remove_student(USER.get_email())
+            DataGateway.save_data('Classroom', classroom, classroom_obj)
     DataGateway.delete_data('User', USER.get_email())
     return redirect(url_for('login'))
 
