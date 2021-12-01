@@ -21,13 +21,13 @@ class LoginForm(FlaskForm):
 
 class CreatClassroom_JoinClassroom(FlaskForm):
     ClassName= StringField('Class Name', validators=[DataRequired(), Length(min=2, max=20)] )
-    ClassDiscriptio=StringField('Class Discription', validators=[DataRequired(), Length(min=10, max=20)] )
+    ClassDiscriptio=StringField('Class Discription', validators=[DataRequired(), Length(min=10)] )
     Type= SelectField("Class Type", choices=[('Private'),('Open')] )
     NumberOfStudents=IntegerField('Size of the Class')
     password= PasswordField('Password' , validators=[DataRequired()])
     confirm_password=PasswordField('Confirm Password' , validators=[DataRequired(), EqualTo('password')])
     submit= SubmitField('Create Classroom')
     JClassName=StringField('Class Name', validators=[DataRequired(), Length(min=2, max=20)] )
-    Jpassword= PasswordField('Code' , validators=[])
+    Jpassword= PasswordField('Code ("Blank if there is no code")' , validators=[])
     Jsubmit= SubmitField('Join Classroom')
 

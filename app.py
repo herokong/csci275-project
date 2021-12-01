@@ -81,11 +81,15 @@ def login():
 @app.route('/classroom/<className>', methods=['GET', 'POST'])
 def classroom(className):
     CLASSROOM = DataGateway.get_data('Classroom', className)
-    creator = DataGateway.get_data('User', CLASSROOM.get_creator()).get_name_string()
+    if DataGateway.get_data('User', CLASSROOM.get_creator()):
+        creator = DataGateway.get_data('User', CLASSROOM.get_creator()).get_name_string()
+    else:
+        creator = CLASSROOM.get_creator()
     students = []
+
     for student in CLASSROOM.get_student_list():
         students.append(DataGateway.get_data('User', student).get_name_string())
-    return render_template('classroom.html', class_name=className, creator=creator, s_list=students)
+    return render_template('classroom.html', class_name=className, creator=creator, s_list=students, user=session.get('User'))
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -94,7 +98,15 @@ def profile():
 
 @app.route('/profile/delete', methods=['GET'])
 def delete():
-    DataGateway.delete_data('User', jsonpickle.decode(session['User']).get_email())
+    USER = DataGateway.get_data('User', jsonpickle.decode(session['User']).get_email())
+    if len(USER.get_class_list()) > 0:
+        for classroom in USER.get_class_list():
+            if DataGateway.get_data('Classroom', classroom).is_creator(USER.get_email()):
+                DataGateway.get_data('Classroom', classroom).set_creator("Account Deleted")
+            else:
+                DataGateway.get_data('Classroom', classroom).remove_student(USER.get_email())
+            DataGateway.save_data('Classroom', classroom)
+    DataGateway.delete_data('User', USER.get_email())
     return redirect(url_for('login'))
 
 if __name__ == "__main__":

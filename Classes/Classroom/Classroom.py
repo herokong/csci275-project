@@ -116,11 +116,8 @@ class Classroom:
         if classroom.is_private():
           if not classroom.get_code() == code:
             raise ValueError('Code is not correct')
-
-        if user.get_role() == 'professor':
-          classroom.add_professor(user.get_email())
-        elif user.get_role() == 'student':
-          classroom.add_student(user.get_email())
+            
+        classroom.add_student(user.get_email())
 
         user.enroll(classroom.get_name())
         DataGateway.save_data('User', user.get_email(), user)
