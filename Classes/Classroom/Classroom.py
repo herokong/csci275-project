@@ -3,14 +3,17 @@ import uuid
 
 class Classroom:
   def __init__(self, name, description, max_student, creator, is_private, id=uuid.uuid4(), code=None):
-    if (DataGateway.is_data_existed('Classroom', name)):
-      raise ValueError('Unsuccessfully created! (there is classroom with that name)')
-    if len(name) < 2:
-      raise ValueError("Name must be longer than 2 characters!")
-    elif len(description) < 3:
-      raise ValueError("Description must be longer than 3 characters!")
-    elif max_student < 0:
-      raise ValueError("Max number of student must be larger than 0!")
+    try:
+      if (DataGateway.is_data_existed('Classroom', name)):
+        raise ValueError('Unsuccessfully created! (there is classroom with that name)')
+      if len(name) < 2:
+        raise ValueError("Name must be longer than 2 characters!")
+      elif len(description) < 3:
+        raise ValueError("Description must be longer than 3 characters!")
+      elif max_student < 0:
+        raise ValueError("Max number of student must be larger than 0!")
+    except ValueError as e:
+      raise e
     self.__id = str(id)
     self.__name = name
     self.__description = description

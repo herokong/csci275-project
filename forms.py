@@ -3,7 +3,7 @@ from wtforms import SelectField, SubmitField
 from wtforms import  BooleanField, StringField, IntegerField
 from wtforms import DateField
 from wtforms import PasswordField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange
 
 class RegistrationForm(FlaskForm):
     Fname= StringField('First Name', validators=[DataRequired(), Length(min=2, max=20)] )
@@ -23,7 +23,7 @@ class CreatClassroom_JoinClassroom(FlaskForm):
     ClassName= StringField('Class Name', validators=[DataRequired(), Length(min=2, max=20)] )
     ClassDiscriptio=StringField('Class Discription', validators=[DataRequired(), Length(min=10)] )
     Type= SelectField("Class Type", choices=[('Private'),('Open')] )
-    NumberOfStudents=IntegerField('Size of the Class')
+    NumberOfStudents=IntegerField('Size of the Class', validators=[DataRequired(), NumberRange(min=0)])
     password= PasswordField('Password' , validators=[DataRequired()])
     confirm_password=PasswordField('Confirm Password' , validators=[DataRequired(), EqualTo('password')])
     submit= SubmitField('Create Classroom')
