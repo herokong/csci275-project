@@ -1,11 +1,121 @@
 {%extends "layout.html"%} 
 {%block content%} 
-<h1>{{ class_name }}</h1>
+
+<div class="container">
+  <!-- navbar -->
+  <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#info">Home</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" aria-current="page" data-bs-toggle="tab">Classwork</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#members">Participations</a>
+    </li>
+  </ul>
+  <!-- end of navbar -->
+
+  <div class="tab-content">
+    <!-- class info -->
+    <div class="tab-pane fade show active">
+      <div class="card"  id="info">
+        <h2 class="card-header">{{ classroom.get_name() }}</h2>
+        <div class="card-body">
+          <h5 class="card-title">Description</h5>
+          <p class="card-text">{{ classroom.get_description() }}</p>
+          {% if classroom.is_private() %}
+          <h5 class="card-title">Class Code</h5>
+          <p class="card-text">{{ classroom.get_code() }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <!-- Announcement -->
+      <div>
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Announcement</h5>
+            <a href="#annouce-form" class="btn btn-primary" data-bs-toggle="collapse">Create New</a>
+          </div>
+          <!-- form for making new annoucement -->
+          <div class="collapse" id="annouce-form">
+            <div class="card card-body">
+              <form action="" method="post">
+                  <fieldset class="form-group">
+                    <div class="form-group">
+                        {{form.Title.label(class="form-control-label")}}
+                        {% if form.Title.errors %}
+                        {{form.Title(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {%for error in form.Title.errors%}
+                            <span>{{error}}</span>
+                            {%endfor%}
+                        </div>
+                        {%else%}
+                        {{form.Title(class="form-control form-control-lg ")}}                        
+                        {%endif%}
+                    </div>    
+                    <div class="form-group">
+                        {{form.Content.label(class="form-control-label")}}
+                        {% if form.Content.errors %}
+                        {{form.Content(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {%for error in form.Content.errors%}
+                            <span>{{error}}</span>
+                            {%endfor%}
+                        </div>
+                        {%else%}
+                        {{form.Content(class="form-control form-control-lg")}}                        
+                        {%endif%}                    
+                    </div>
+                </fieldset>
+                <div class ="form-group pt-3">
+                    {{form.Submit(class='btn btn-primary')}}
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- end here for form -->
+        </div>
+        <div class="card">
+          <!-- for loop -->
+          <div class="card-body">
+            <h5 class="card-title">Announcement Title</h5>
+            <p class="card-text">Content</p>
+          </div>
+          <!-- end for loop -->
+        </div>
+      </div>
+      <!-- end of Announcement -->
+    </div>
+    <!-- end of class info -->
+
+    <!-- class members -->
+    <div class="card tab-pane" id="members">
+      <h2 class="card-header">Professor</h2>
+      <div class="card-body">
+        <h5 class="card-title">{{ creator }}</h5>
+      </div>
+      
+      {% if s_list |length > 0 %}
+        <h2 class="card-header">Student</h2>
+        <div class="card-body">
+            {% for student in s_list %}
+              <h5 class="card-title">{{ student }}</h5>
+            {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <!-- end of class members -->
+  </div>
+</div>
+
+<!-- <h1>{{ class_name }}</h1>
 <h1>Creator: {{ creator }}</h1>
 
 {% for student in s_list %}
 <ul class="list-group">
   <li class="list-group-item">{{ student }}</li>
 </ul>
-{% endfor %}
+{% endfor %} -->
 {%endblock%}

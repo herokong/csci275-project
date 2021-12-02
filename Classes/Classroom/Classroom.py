@@ -19,7 +19,6 @@ class Classroom:
     self.__description = description
     self.__max_student_number = max_student
     self.__student_list = {}
-    self.__professor_list = []
     self.__creator = creator.get_email()
     self.__classwork_list = {}
     self.__is_private = is_private

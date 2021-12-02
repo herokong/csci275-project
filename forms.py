@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
-from wtforms import  BooleanField, StringField, IntegerField
+from wtforms import  BooleanField, StringField, IntegerField, TextAreaField
 from wtforms import DateField
 from wtforms import PasswordField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange
@@ -20,7 +20,7 @@ class LoginForm(FlaskForm):
     submit= SubmitField('Sign In')
 
 class CreatClassroom_JoinClassroom(FlaskForm):
-    ClassName= StringField('Class Name', validators=[DataRequired(), Length(min=2, max=20)] )
+    ClassName= StringField('Class Name', validators=[DataRequired(), Length(min=2)] )
     ClassDiscriptio=StringField('Class Discription', validators=[DataRequired(), Length(min=10)] )
     Type= SelectField("Class Type", choices=[('Private'),('Open')] )
     NumberOfStudents=IntegerField('Size of the Class', validators=[DataRequired(), NumberRange(min=0)])
@@ -28,6 +28,11 @@ class CreatClassroom_JoinClassroom(FlaskForm):
     confirm_password=PasswordField('Confirm Password' , validators=[DataRequired(), EqualTo('password')])
     submit= SubmitField('Create Classroom')
     JClassName=StringField('Class Name', validators=[DataRequired(), Length(min=2, max=20)] )
-    Jpassword= PasswordField('Code ("Blank if there is no code")' , validators=[])
+    Jpassword= PasswordField('Code (Blank if there is no code)' , validators=[])
     Jsubmit= SubmitField('Join Classroom')
+
+class AnnoucementForm(FlaskForm):
+    Title = StringField('Annoucement Title', validators=[DataRequired(), Length(min=2)])
+    Content = TextAreaField('Annoucement Content', validators=[DataRequired(), Length(min=3)])
+    Submit= SubmitField('Create')
 

@@ -3,7 +3,7 @@ from Classes.Classroom import Classroom, PrivateClassroom, PublicClassroom
 from Classes.Account import Student, Professor
 from flask import Flask, render_template, url_for, redirect, request, session
 from flask.helpers import flash
-from forms import RegistrationForm, LoginForm, CreatClassroom_JoinClassroom
+from forms import RegistrationForm, LoginForm, CreatClassroom_JoinClassroom, AnnoucementForm
 import jsonpickle
 app = Flask(__name__)
 
@@ -80,16 +80,23 @@ def login():
 
 @app.route('/classroom/<className>', methods=['GET', 'POST'])
 def classroom(className):
-    CLASSROOM = DataGateway.get_data('Classroom', className)
-    if DataGateway.get_data('User', CLASSROOM.get_creator()):
-        creator = DataGateway.get_data('User', CLASSROOM.get_creator()).get_name_string()
-    else:
-        creator = CLASSROOM.get_creator()
-    students = []
+    try:
+        form = AnnoucementForm()
+        CLASSROOM = DataGateway.get_data('Classroom', className)
 
-    for student in CLASSROOM.get_student_list():
-        students.append(DataGateway.get_data('User', student).get_name_string())
-    return render_template('classroom.html', class_name=className, creator=creator, s_list=students, user=session.get('User'))
+        # get creator of the classroom if the account is still existed
+        if DataGateway.get_data('User', CLASSROOM.get_creator()):
+            creator = DataGateway.get_data('User', CLASSROOM.get_creator()).get_name_string()
+        else:
+            creator = CLASSROOM.get_creator()
+
+        students = []
+        for student in CLASSROOM.get_student_list():
+            students.append(DataGateway.get_data('User', student).get_name_string())
+
+    except ValueError as e:
+        flash(f'There is an error: {e}')
+    return render_template('classroom.html', s_list=students, user=session.get('User'), classroom=CLASSROOM, creator=creator, form=form)
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -98,16 +105,19 @@ def profile():
 
 @app.route('/profile/delete', methods=['GET'])
 def delete():
-    USER = DataGateway.get_data('User', jsonpickle.decode(session['User']).get_email())
-    if len(USER.get_class_list()) > 0:
-        for classroom in USER.get_class_list():
-            classroom_obj = DataGateway.get_data('Classroom', classroom)
-            if classroom_obj.is_creator(USER.get_email()):
-                classroom_obj.set_creator("Account Deleted")
-            else:
-                classroom_obj.remove_student(USER.get_email())
-            DataGateway.save_data('Classroom', classroom, classroom_obj)
-    DataGateway.delete_data('User', USER.get_email())
+    try:
+        USER = DataGateway.get_data('User', jsonpickle.decode(session['User']).get_email())
+        if len(USER.get_class_list()) > 0:
+            for classroom in USER.get_class_list():
+                classroom_obj = DataGateway.get_data('Classroom', classroom)
+                if classroom_obj.is_creator(USER.get_email()):
+                    classroom_obj.set_creator("Account Deleted")
+                else:
+                    classroom_obj.remove_student(USER.get_email())
+                DataGateway.save_data('Classroom', classroom, classroom_obj)
+        DataGateway.delete_data('User', USER.get_email())
+    except ValueError as e:
+        flash(f"There is an error: {e}")
     return redirect(url_for('login'))
 
 if __name__ == "__main__":
