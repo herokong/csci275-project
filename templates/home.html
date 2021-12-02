@@ -150,14 +150,16 @@
       </div>
     </div>
   </div>
-  <div>
-    {% for class in classes %}
-      <div class="card" style="width: 18rem;">
+  <div class="container">
+    <div class="row row-cols-auto">
+      {% for class in classes %}
+      <div class="card col" style="width: 18rem;">
         <div class="card-body">
           <h5 class="card-title">{{ class }}</h5>
           <a href="{{url_for("classroom", className=class)}}" class="btn btn-primary">Enter</a>
         </div>
       </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
 {%endblock%}

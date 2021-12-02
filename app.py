@@ -102,7 +102,7 @@ def delete():
     if len(USER.get_class_list()) > 0:
         for classroom in USER.get_class_list():
             classroom_obj = DataGateway.get_data('Classroom', classroom)
-            if DataGateway.get_data('Classroom', classroom).is_creator(USER.get_email()):
+            if classroom_obj.is_creator(USER.get_email()):
                 classroom_obj.set_creator("Account Deleted")
             else:
                 classroom_obj.remove_student(USER.get_email())
