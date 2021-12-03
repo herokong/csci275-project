@@ -1,9 +1,10 @@
 from Domain.utils.DataGateway import DataGateway
 from Classes.Classroom import Classroom, PrivateClassroom, PublicClassroom
 from Classes.Account import Student, Professor
+from Classes.Announcement import Announcement
 from flask import Flask, render_template, url_for, redirect, request, session
 from flask.helpers import flash
-from forms import RegistrationForm, LoginForm, CreatClassroom_JoinClassroom, AnnoucementForm
+from forms import RegistrationForm, LoginForm, CreatClassroom_JoinClassroom, AnnouncementForm
 import jsonpickle
 app = Flask(__name__)
 
@@ -81,8 +82,14 @@ def login():
 @app.route('/classroom/<className>', methods=['GET', 'POST'])
 def classroom(className):
     try:
-        form = AnnoucementForm()
+        form = AnnouncementForm()
         CLASSROOM = DataGateway.get_data('Classroom', className)
+
+        # Create new annoucement
+        if (request.method == 'POST'):
+            if (request.form.get('Submit')):
+                Announcement.Announcement(form.Title.data, form.Content.data, CLASSROOM)
+            return redirect(url_for('classroom', className=className))
 
         # get creator of the classroom if the account is still existed
         if DataGateway.get_data('User', CLASSROOM.get_creator()):
@@ -94,9 +101,13 @@ def classroom(className):
         for student in CLASSROOM.get_student_list():
             students.append(DataGateway.get_data('User', student).get_name_string())
 
+        announcements = []
+        for announcement in CLASSROOM.get_announcements():
+            announcements.insert(0, DataGateway.get_data('Announcement', announcement))
+
     except ValueError as e:
         flash(f'There is an error: {e}')
-    return render_template('classroom.html', s_list=students, user=session.get('User'), classroom=CLASSROOM, creator=creator, form=form)
+    return render_template('classroom.html', s_list=students, user=session.get('User'), classroom=CLASSROOM, creator=creator, form=form, announcements=announcements)
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():

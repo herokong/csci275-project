@@ -31,8 +31,8 @@ class CreatClassroom_JoinClassroom(FlaskForm):
     Jpassword= PasswordField('Code (Blank if there is no code)' , validators=[])
     Jsubmit= SubmitField('Join Classroom')
 
-class AnnoucementForm(FlaskForm):
-    Title = StringField('Annoucement Title', validators=[DataRequired(), Length(min=2)])
-    Content = TextAreaField('Annoucement Content', validators=[DataRequired(), Length(min=3)])
+class AnnouncementForm(FlaskForm):
+    Title = StringField('Announcement Title', validators=[DataRequired(), Length(min=2)])
+    Content = TextAreaField('Announcement Content', validators=[DataRequired(), Length(min=3)])
     Submit= SubmitField('Create')
 

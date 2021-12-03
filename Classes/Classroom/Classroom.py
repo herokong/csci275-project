@@ -21,6 +21,7 @@ class Classroom:
     self.__student_list = {}
     self.__creator = creator.get_email()
     self.__classwork_list = {}
+    self.__announcements = []
     self.__is_private = is_private
     self.__code = code
     creator.enroll(name)
@@ -74,7 +75,6 @@ class Classroom:
 
   def get_classwork(self):
     return self.__classwork_list
-
   
   def set_classwork(self, classwork_list):
     self.__classwork_list = classwork_list
@@ -101,6 +101,12 @@ class Classroom:
   
   def get_code(self):
     return self.__code
+  
+  def get_announcements(self):
+    return self.__announcements
+  
+  def add_announcement(self, annoucement):
+    self.__announcements.append(annoucement)
   
   def check_enrollment(self, student_email):
     if (student_email in self.__student_list):
