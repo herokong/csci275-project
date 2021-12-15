@@ -2,9 +2,10 @@ from Domain.utils.DataGateway import DataGateway
 from Classes.Classroom import Classroom, PrivateClassroom, PublicClassroom
 from Classes.Account import Student, Professor
 from Classes.Announcement import Announcement
-from flask import Flask, render_template, url_for, redirect, request, session
+from Classes.Classwork import Classwork
+from flask import Flask, render_template, url_for, redirect, request, session, send_file
 from flask.helpers import flash
-from forms import RegistrationForm, LoginForm, CreatClassroom_JoinClassroom, AnnouncementForm
+from forms import RegistrationForm, LoginForm, CreatClassroom_JoinClassroom, AnnouncementForm, ClassWork
 import jsonpickle
 app = Flask(__name__)
 
@@ -64,6 +65,7 @@ def register():
         return redirect(url_for('home'))
     return render_template('register.html', title = 'Register', form = form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -78,6 +80,7 @@ def login():
         except:
             flash(f'Login Unsuccessful. please check username and password', 'danger')
     return render_template('login.html', title = 'LogIn', form = form)
+
 
 @app.route('/classroom/<className>', methods=['GET', 'POST'])
 def classroom(className):
@@ -98,7 +101,9 @@ def classroom(className):
             creator = CLASSROOM.get_creator()
 
         students = []
+        students_obj = []
         for student in CLASSROOM.get_student_list():
+            students_obj.append(DataGateway.get_data('User', student))
             students.append(DataGateway.get_data('User', student).get_name_string())
 
         announcements = []
@@ -107,12 +112,14 @@ def classroom(className):
 
     except ValueError as e:
         flash(f'There is an error: {e}')
-    return render_template('classroom.html', s_list=students, user=session.get('User'), classroom=CLASSROOM, creator=creator, form=form, announcements=announcements)
+    return render_template('classroom.html', s_list=students, studentsObj=students_obj, user=jsonpickle.decode(session['User']), classroom=CLASSROOM, creator=creator, form=form, announcements=announcements)
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     USER = DataGateway.get_data('User', jsonpickle.decode(session['User']).get_email())
     return render_template('profile.html', user_name=USER.get_name_string(), user=USER)
+
 
 @app.route('/profile/delete', methods=['GET'])
 def delete():
@@ -130,6 +137,99 @@ def delete():
     except ValueError as e:
         flash(f"There is an error: {e}")
     return redirect(url_for('login'))
+
+
+@app.route('/classroom/<className>/classwork', methods=['GET','POST'])
+def classwork(className):
+    form = ClassWork()
+    class_obj = DataGateway.get_data('Classroom', className)
+    if (request.method == 'POST'):
+        try:
+            if request.form.get('title') and request.form.get('description'):
+                title = request.form.get('title')
+                description = request.form.get('description')
+                if request.files:
+                    file = request.files['pdf']
+                Classwork.Classwork(title, description, file, className)
+            else:
+                raise ValueError('You need to description the assignment!')
+        except ValueError as e:
+            flash(f"Error: {e}!", 'danger')
+        return redirect(request.url)
+
+    elif (request.method == "GET"):
+        classworks_name = DataGateway.get_data('Classroom', className).get_classwork()
+        classworks = []
+        for name in classworks_name:
+            classworks.insert(0, DataGateway.get_classwork(name))
+    return render_template('classwork.html', classroom=className, user=jsonpickle.decode(session['User']), form=form, classworks=classworks, classObj=class_obj)
+
+@app.route('/classroom/<className>/classwork/<name>', methods=['GET', 'POST'])
+def classwork_info(className, name):
+    try:
+        if DataGateway.get_data('Classroom', className).is_creator(jsonpickle.decode(session['User']).get_email()):
+            return redirect(url_for('classwork_professor', className = className, name=name))
+        else:
+            return redirect(url_for('classwork_student', className = className, name=name))
+    except:
+        raise ValueError('Not Working')
+
+@app.route('/classroom/<className>/classwork/<name>/p', methods=['GET', 'POST'])
+def classwork_professor(className, name):
+    try:
+        class_work = DataGateway.get_classwork(name)
+        students_info = {}
+        for student in class_work.get_info():
+            students_info[student] = {}
+            students_info[student]['name'] = DataGateway.get_data('User', student).get_name_string()
+            students_info[student]['file'] = class_work.get_info()[student]['file']
+            students_info[student]['grade'] = class_work.get_info()[student]['grade']
+    except :
+        flash('Error', 'danger')
+    return render_template('classworkprofessor.html', user=jsonpickle.decode(session['User']), className=className, classWork=class_work, studentInfo=students_info)
+
+@app.route('/classroom/<className>/classwork/<name>/s', methods=['GET', 'POST'])
+def classwork_student(className, name):
+    try:
+        class_work = DataGateway.get_classwork(name)
+        USER = jsonpickle.decode(session['User'])
+        if class_work.get_student_info((USER).get_email()):
+            student_grade = class_work.get_student_grade(jsonpickle.decode(session['User']).get_email())
+            student_file = class_work.get_student_file(jsonpickle.decode(session['User']).get_email())
+        else:
+            student_grade = 0
+            student_file = None
+        # submition
+        if (request.method == 'POST'):
+            if request.files:
+                file = request.files['pdf']
+                class_work.submit_student_work(USER.get_email(), file.filename)
+                DataGateway.save_student_work(DataGateway.get_classwork_path(class_work.get_id()), USER.get_email(), file)
+            else:
+                raise ValueError('You need to description the assignment!')
+            return redirect(request.url)
+    except ValueError as e:
+        flash(f"{e}", 'danger')
+    return render_template('classworkstudent.html', user=jsonpickle.decode(session['User']),className=className, classWork=class_work, grade=student_grade, file=student_file)
+
+@app.route('/download-file/<classwork_name>/<file_name>/<file_type>/', methods=['GET', 'POST'])
+@app.route('/download-file/<classwork_name>/<file_name>/<file_type>/<student_email>', methods=['GET', 'POST'])
+def download_file(classwork_name, file_name, file_type, student_email=None):
+    if file_type == 'instruction':
+        path = DataGateway.get_classwork_path(classwork_name)
+    elif file_type == 'student':
+        path = DataGateway.get_classwork_path(classwork_name) + '/' + student_email
+    file_path = path + '/' + file_name
+    print(file_path)
+    return send_file(file_path, as_attachment=True)
+
+@app.route('/grading/<classname>/<classwork>/<student>', methods=['POST','GET'])
+def grading(classname, classwork, student):
+    print(request.method)
+    if request.method == "POST":
+        class_work = DataGateway.get_classwork(classwork)
+        class_work.give_grade(student, int(request.form.get("score")))
+    return redirect(url_for('classwork_professor', className=classname, name=classwork))
 
 if __name__ == "__main__":
     app.run(debug=True) 

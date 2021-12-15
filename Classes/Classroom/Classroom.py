@@ -20,7 +20,7 @@ class Classroom:
     self.__max_student_number = max_student
     self.__student_list = {}
     self.__creator = creator.get_email()
-    self.__classwork_list = {}
+    self.__classwork_list = []
     self.__announcements = []
     self.__is_private = is_private
     self.__code = code
@@ -76,9 +76,9 @@ class Classroom:
   def get_classwork(self):
     return self.__classwork_list
   
-  def set_classwork(self, classwork_list):
-    self.__classwork_list = classwork_list
-  
+  def add_classwork(self, classwork):
+    self.__classwork_list.append(classwork)
+
   def is_private(self):
     return self.__is_private
   
@@ -118,7 +118,7 @@ class Classroom:
     try:
       if DataGateway.is_data_existed('Classroom', classname):
         classroom = DataGateway.get_data('Classroom', classname)
-        if user.get_email() in classroom.get_student_list() or user.get_email() in classroom.get_professor_lsit() or classroom.is_creator(user.get_email()):
+        if user.get_email() in classroom.get_student_list() or classroom.is_creator(user.get_email()):
           raise ValueError('User is already in the classroom')
 
         if classroom.is_private():
@@ -135,3 +135,21 @@ class Classroom:
 
     except ValueError as e:
       raise e
+
+  def get_student_grade(self, student_email):
+    try:
+      student_score = 0
+      student_scores = []
+      if len(self.__classwork_list) > 0:
+        for classwork in self.__classwork_list:
+          if DataGateway.get_classwork(classwork).get_student_grade(student_email):
+            student_scores.append(DataGateway.get_classwork(classwork).get_student_grade(student_email))
+        if len(student_scores) > 0:  
+          for score in student_scores:
+            student_score += score
+        if student_score == 0:
+          return student_score
+        student_score /= (len(student_scores))
+    except:
+      raise ValueError('Error')
+    return student_score

@@ -36,3 +36,7 @@ class AnnouncementForm(FlaskForm):
     Content = TextAreaField('Announcement Content', validators=[DataRequired(), Length(min=3)])
     Submit= SubmitField('Create')
 
+class ClassWork(FlaskForm):
+    Title = StringField('Title', validators=[DataRequired(), Length(min=2)])
+    Description = TextAreaField('Description', validators=[DataRequired(), Length(min=3)])
+

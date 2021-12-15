@@ -8,10 +8,13 @@
       <a class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#info">Home</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" aria-current="page" data-bs-toggle="tab">Classwork</a>
+      <a class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#members">Members</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#members">Participations</a>
+      <a class="nav-link" href="{{url_for("classwork", className=classroom.get_name())}}">Classwork</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#grade">Grade</a>
     </li>
   </ul>
   <!-- end of navbar -->
@@ -33,10 +36,12 @@
       <!-- Announcement -->
       <div>
         <div class="card text-center">
-          <div class="card-body">
-            <h5 class="card-title">Announcement</h5>
-            <a href="#annouce-form" class="btn btn-primary" data-bs-toggle="collapse">Create New</a>
-          </div>
+          {% if classroom.is_creator( user.get_email() )%}
+            <div class="card-body">
+              <h5 class="card-title">Announcement</h5>
+              <a href="#annouce-form" class="btn btn-primary" data-bs-toggle="collapse">Create New</a>
+            </div>
+          {% endif %}
           <!-- form for making new annoucement -->
           <div class="collapse" id="annouce-form">
             <div class="card card-body">
@@ -100,23 +105,43 @@
       
       {% if s_list |length > 0 %}
         <h2 class="card-header">Student</h2>
-        <div class="card-body">
-            {% for student in s_list %}
+        {% for student in s_list %}
+          <div class="card-body">
               <h5 class="card-title">{{ student }}</h5>
-            {% endfor %}
-        </div>
+          </div>
+        {% endfor %}
       {% endif %}
     </div>
     <!-- end of class members -->
+
+    <!-- grade panel -->
+
+    <div class="card tab-pane" id="grade">
+      <h2 class="card-header">Professor</h2>
+      <div class="card-body">
+        <h5 class="card-title">{{ creator }}</h5>
+      </div>
+      {% if classroom.is_creator( user.get_email() )%}
+        {% if studentsObj |length > 0 %}
+          <h2 class="card-header">Student</h2>
+          {% for student in studentsObj %}
+          <div class="card-body row">
+              <h5 class="card-title col-10">{{ student.get_name_string() }}</h5>
+              <h5 class="card-title col">Grade: {{ classroom.get_student_grade(student.get_email() )}}</h5>
+          </div>
+          {% endfor %}
+        {% endif %}
+      {% else %}
+        <h2 class="card-header">Student</h2>
+        <div class="card-body row">
+          <h5 class="card-title col-10">{{ user.get_name_string() }}</h5>
+          <h5 class="card-title col">Grade: {{ classroom.get_student_grade(user.get_email() )}}</h5>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- end of grade pannel -->
+
   </div>
 </div>
-
-<!-- <h1>{{ class_name }}</h1>
-<h1>Creator: {{ creator }}</h1>
-
-{% for student in s_list %}
-<ul class="list-group">
-  <li class="list-group-item">{{ student }}</li>
-</ul>
-{% endfor %} -->
 {%endblock%}
